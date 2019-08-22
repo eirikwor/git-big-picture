@@ -576,6 +576,10 @@ class Git(object):
         tag_prefix = 'refs/tags/'
         lbranches, rbranches, abranches = {}, {}, {}
         tags, ctags, nctags = {}, {}, {}
+        
+        head_str = self("git rev-parse HEAD")[0]
+        new_entry = "[\'" + head_str + "\', \'\',  \'commit\', \'refs/heads/HEAD\']"
+        output.append(new_entry)
 
         def add_to_dict(dic, sha1, name):
             dic.setdefault(sha1, set()).add(name)
@@ -848,6 +852,7 @@ class CommitGraph(object):
             if with_commit_messages:
                 output = self.git('git log -1 --pretty=format:%s ' + sha_one)
                 message = output[0].replace('"', '').replace('\'', '')
+                message = (message[:22] + '...') if len(message) > 25 else message
                 return format_sha_one(sha_one) + '\n' + message
             else:
                 return format_sha_one(sha_one)
